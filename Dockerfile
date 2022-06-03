@@ -1,13 +1,12 @@
-FROM debian:stretch-slim
-LABEL maintainer="Phil Hawthorne <me@philhawthorne.com>"
+FROM debian:buster-slim
+LABEL maintainer="Tomas Jurena <jurenatomas@gmail.com>"
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 
 # Default versions
-ENV INFLUXDB_VERSION=1.8.2
-ENV CHRONOGRAF_VERSION=1.8.6
-ENV GRAFANA_VERSION=7.2.0
+ENV INFLUXDB_VERSION=2.2.0
+ENV GRAFANA_VERSION=8.5.4
 
 # Grafana database type
 ENV GF_DATABASE_TYPE=sqlite3
@@ -16,6 +15,8 @@ ENV GF_DATABASE_TYPE=sqlite3
 COPY system/99fixbadproxy /etc/apt/apt.conf.d/99fixbadproxy
 
 WORKDIR /root
+
+SHELL ["/bin/bash", "-c"]
 
 # Clear previous sources
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
@@ -27,10 +28,10 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
       *)     echo "Unsupported architecture: ${dpkgArch}"; exit 1;; \
     esac && \
     rm /var/lib/apt/lists/* -vf \
-    # Base dependencies
+    # Base packages
     && apt-get -y update \
     && apt-get -y dist-upgrade \
-    && apt-get -y --force-yes install \
+    && apt-get -y install \
         apt-utils \
         ca-certificates \
         curl \
@@ -42,17 +43,18 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
         supervisor \
         wget \
         gnupg \
-    && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
+        libfontconfig1 \
+        adduser \
+    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
     && apt-get install -y nodejs \
     && mkdir -p /var/log/supervisor \
     && rm -rf .profile \
     # Install InfluxDB
-    && wget --no-verbose https://dl.influxdata.com/influxdb/releases/influxdb_${INFLUXDB_VERSION}_${ARCH}.deb \
-    && dpkg -i influxdb_${INFLUXDB_VERSION}_${ARCH}.deb \
-    && rm influxdb_${INFLUXDB_VERSION}_${ARCH}.deb \
-    # Install Chronograf
-    && wget https://dl.influxdata.com/chronograf/releases/chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb \
-    && dpkg -i chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb && rm chronograf_${CHRONOGRAF_VERSION}_${ARCH}.deb \
+    && wget -qO- https://repos.influxdata.com/influxdb.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null \
+    && export DISTRIB_ID=$(lsb_release -si); export DISTRIB_CODENAME=$(lsb_release -sc) \
+    && echo "deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | tee /etc/apt/sources.list.d/influxdb.list > /dev/null \
+    && apt-get update \
+    && apt-get -y install influxdb2 \
     # Install Grafana
     && wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${ARCH}.deb \
     && dpkg -i grafana_${GRAFANA_VERSION}_${ARCH}.deb \
