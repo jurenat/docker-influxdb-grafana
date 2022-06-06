@@ -1,10 +1,8 @@
 # Docker Image with InfluxDB and Grafana
 
-[![Docker Pulls](https://img.shields.io/docker/pulls/philhawthorne/docker-influxdb-grafana.svg)](https://dockerhub.com/philhawthorne/docker-influxdb-grafana) [![license](https://img.shields.io/github/license/philhawthorne/docker-influxdb-grafana.svg)](https://dockerhub.com/philhawthorne/docker-influxdb-grafana)
+[![Docker Pulls](https://img.shields.io/docker/pulls/darkmoon32/influxdb-sqlite-grafana.svg)](https://dockerhub.com/darkmoon32/influxdb-sqlite-grafana) [![license](https://img.shields.io/github/license/philhawthorne/docker-influxdb-grafana.svg)](https://dockerhub.com/philhawthorne/docker-influxdb-grafana)
 
-![Grafana][grafana-version] ![Influx][influx-version] ![Chronograf][chronograf-version]
-
-[![Buy me a coffee][buymeacoffee-icon]][buymeacoffee]
+![Grafana][grafana-version] ![Influx][influx-version]
 
 
 This is a Docker image based on the awesome [Docker Image with Telegraf (StatsD), InfluxDB and Grafana](https://github.com/samuelebistoletti/docker-statsd-influxdb-grafana) from [Samuele Bistoletti](https://github.com/samuelebistoletti).
@@ -19,9 +17,8 @@ The main purpose of this image is to be used to show data from a [Home Assistant
 
 | Description  | Value   |
 |--------------|---------|
-| InfluxDB     | 1.8.2   |
-| ChronoGraf   | 1.8.6   |
-| Grafana      | 7.2.0   |
+| InfluxDB     | 2.2.0   |
+| Grafana      | 8.5.4   |
 
 ## Quick Start
 
@@ -31,11 +28,10 @@ To start the container with persistence you can use the following:
 docker run -d \
   --name docker-influxdb-grafana \
   -p 3003:3003 \
-  -p 3004:8083 \
   -p 8086:8086 \
   -v /path/for/influxdb:/var/lib/influxdb \
   -v /path/for/grafana:/var/lib/grafana \
-  philhawthorne/docker-influxdb-grafana:latest
+  darkmoon32/influxdb-sqlite-grafana:latest
 ```
 
 To stop the container launch:
@@ -56,7 +52,6 @@ docker start docker-influxdb-grafana
 Host		Container		Service
 
 3003		3003			grafana
-3004		8083			chronograf
 8086		8086			influxdb
 ```
 ## SSH
@@ -88,7 +83,7 @@ Now you are ready to add your first dashboard and launch some queries on a datab
 
 ## InfluxDB
 
-### Web Interface (Chronograf)
+### Web Interface
 
 Open <http://localhost:3004>
 
@@ -103,9 +98,5 @@ Port: 8086
 1. Establish a ssh connection with the container
 2. Launch `influx` to open InfluxDB Shell (CLI)
 
-[buymeacoffee-icon]: https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg
-[buymeacoffee]: https://www.buymeacoffee.com/philhawthorne
-
-[grafana-version]: https://img.shields.io/badge/Grafana-7.2.0-brightgreen
-[influx-version]: https://img.shields.io/badge/Influx-1.8.2-brightgreen
-[chronograf-version]: https://img.shields.io/badge/Chronograf-1.8.6-brightgreen
+[grafana-version]: https://img.shields.io/badge/Grafana-8.5.4-brightgreen
+[influx-version]: https://img.shields.io/badge/Influx-2.2.0-brightgreen
