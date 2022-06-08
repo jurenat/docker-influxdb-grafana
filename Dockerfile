@@ -5,7 +5,6 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 
 # Default versions
-ENV INFLUXDB_VERSION=2.2.0
 ENV GRAFANA_VERSION=8.5.4
 
 # Grafana database type
@@ -49,12 +48,12 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
     && apt-get install -y nodejs \
     && mkdir -p /var/log/supervisor \
     && rm -rf .profile \
-    # Install InfluxDB
+    # Install InfluxDB & telegraf
     && wget -qO- https://repos.influxdata.com/influxdb.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null \
     && export DISTRIB_ID=$(lsb_release -si); export DISTRIB_CODENAME=$(lsb_release -sc) \
     && echo "deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | tee /etc/apt/sources.list.d/influxdb.list > /dev/null \
     && apt-get update \
-    && apt-get -y install influxdb2 \
+    && apt-get -y install influxdb2 telegraf \
     # Install Grafana
     && wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${ARCH}.deb \
     && dpkg -i grafana_${GRAFANA_VERSION}_${ARCH}.deb \
@@ -69,6 +68,9 @@ COPY bash/profile .profile
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
+
+# Configure Telegraf
+COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
 
 # Configure Grafana
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
