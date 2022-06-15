@@ -20,9 +20,4 @@ sed -i "/environment =/s/=.*/= INFLUX_ORG=\"${org}\",INFLUX_ACCESS_TOKEN=\"${tok
 # template from here: https://github.com/influxdata/community-templates/tree/master/thing_network
 influx apply -o ${org} -f /etc/influxdb/ttn-template.yml --force yes
 
-supervisorctl reread
-supervisorctl update
-
-supervisorctl restart all
-
 touch /setup_done
