@@ -68,13 +68,14 @@ COPY bash/profile .profile
 
 # Configure InfluxDB
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
-
-# Configure Telegraf
-COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
+COPY influxdb/ttn-template.yml /etc/influxdb/ttn-template.yml
 
 # Configure Grafana
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
+COPY grafana/provisioning/datasources/influxdb.yml /etc/grafana/provisioning/datasources/influxdb.yml
 
 COPY run.sh /run.sh
+COPY setup.sh /setup.sh
+
 RUN ["chmod", "+x", "/run.sh"]
 CMD ["/run.sh"]
