@@ -14,7 +14,10 @@ influx setup \
 # create API tokens
 influx auth create --write-buckets --read-buckets -d "Token for telegraf and grafana"
 token=$(influx auth list | tail -n 1 | awk '{print $7}')
-sed -i "/environment =/s/=.*/= INFLUX_ORG=\"${org}\",INFLUX_ACCESS_TOKEN=\"${token}\"/" /etc/supervisor/conf.d/supervisord.conf
+echo "INFLUX_ORG=\"${org}\"
+INFLUX_TOKEN=\"${token}\"
+INFLUX_HOST=\"http://localhost:8086\"
+INFLUX_BUCKET=\"${bucket}\"" > /etc/default/influxdb2
 
 # use predefined template configuration
 # template from here: https://github.com/influxdata/community-templates/tree/master/thing_network

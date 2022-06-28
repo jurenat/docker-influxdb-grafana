@@ -70,6 +70,10 @@ COPY bash/profile .profile
 COPY influxdb/influxdb.conf /etc/influxdb/influxdb.conf
 COPY influxdb/ttn-template.yml /etc/influxdb/ttn-template.yml
 
+# Configure Telegraf
+COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
+COPY telegraf/telegraf.env /etc/default/telegraf
+
 # Configure Grafana
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
 COPY grafana/provisioning/datasources/influxdb.yml /etc/grafana/provisioning/datasources/influxdb.yml
