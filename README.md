@@ -30,6 +30,8 @@ docker run -d \
   -p 8086:8086 \
   -v /path/for/influxdb:/var/lib/influxdb \
   -v /path/for/grafana:/var/lib/grafana \
+  -e THING_USERNAME="<TTN_USERNAME>" \
+  -e THING_API_KEY="<TTN_API_KEY>" \
   darkmoon32/influxdb-sqlite-grafana:latest
 ```
 

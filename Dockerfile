@@ -72,7 +72,6 @@ COPY influxdb/ttn-template.yml /etc/influxdb/ttn-template.yml
 
 # Configure Telegraf
 COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
-COPY telegraf/telegraf.env /etc/default/telegraf
 
 # Configure Grafana
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
