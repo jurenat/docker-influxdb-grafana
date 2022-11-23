@@ -77,6 +77,8 @@ COPY telegraf/telegraf.conf /etc/telegraf/telegraf.conf
 # Configure Grafana
 COPY grafana/grafana.ini /etc/grafana/grafana.ini
 COPY grafana/provisioning/datasources/influxdb.yml /etc/grafana/provisioning/datasources/influxdb.yml
+COPY grafana/provisioning/dashboards/dashboards.yaml /etc/grafana/provisioning/dashboards/dashboards.yaml
+COPY grafana/dashboards/Temperature.json  /var/lib/grafana/dashboards/Temperature.json
 
 COPY run.sh /run.sh
 COPY setup.sh /setup.sh
