@@ -16,8 +16,8 @@ The main purpose of this image is to be used to show data from a [Home Assistant
 
 | Description  | Value   |
 |--------------|---------|
-| InfluxDB     | 2.2.0   |
-| Grafana      | 8.5.4   |
+| InfluxDB     | 2.5.1   |
+| Grafana      | 9.2.6   |
 
 ## Quick Start
 
@@ -86,7 +86,7 @@ Now you are ready to add your first dashboard and launch some queries on a datab
 
 ### Web Interface
 
-Open <http://localhost:3004>
+Open <http://localhost:8086>
 
 ```
 Username: root
@@ -99,5 +99,5 @@ Port: 8086
 1. Establish a ssh connection with the container
 2. Launch `influx` to open InfluxDB Shell (CLI)
 
-[grafana-version]: https://img.shields.io/badge/Grafana-8.5.4-brightgreen
-[influx-version]: https://img.shields.io/badge/Influx-2.2.0-brightgreen
+[grafana-version]: https://img.shields.io/badge/Grafana-9.2.6-brightgreen
+[influx-version]: https://img.shields.io/badge/Influx-2.5.1-brightgreen

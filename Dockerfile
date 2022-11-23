@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
 
 # Default versions
-ENV GRAFANA_VERSION=8.5.4
+ENV GRAFANA_VERSION=9.2.6
 
 # Grafana database type
 ENV GF_DATABASE_TYPE=sqlite3
@@ -49,13 +49,14 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
     && mkdir -p /var/log/supervisor \
     && rm -rf .profile \
     # Install InfluxDB & telegraf
-    && wget -qO- https://repos.influxdata.com/influxdb.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null \
-    && export DISTRIB_ID=$(lsb_release -si); export DISTRIB_CODENAME=$(lsb_release -sc) \
-    && echo "deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/${DISTRIB_ID,,} ${DISTRIB_CODENAME} stable" | tee /etc/apt/sources.list.d/influxdb.list > /dev/null \
+    && export DISTRIB_ID=$(lsb_release -si) \
+    && wget -q https://repos.influxdata.com/influxdb.key \
+    && echo "23a1c8836f0afc5ed24e0486339d7cc8f6790b83886c4c96995b88a061c5bb5d influxdb.key" | sha256sum -c && cat influxdb.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null \
+    && echo "deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/${DISTRIB_ID,,} stable main" | tee /etc/apt/sources.list.d/influxdata.list > /dev/null \
     && apt-get update \
     && apt-get -y install influxdb2 telegraf \
     # Install Grafana
-    && wget https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${ARCH}.deb \
+    && wget -q https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${ARCH}.deb \
     && dpkg -i grafana_${GRAFANA_VERSION}_${ARCH}.deb \
     && rm grafana_${GRAFANA_VERSION}_${ARCH}.deb \
     # Cleanup
