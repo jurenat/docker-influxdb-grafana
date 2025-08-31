@@ -1,11 +1,12 @@
-FROM debian:buster-slim
+FROM ubuntu:noble
 LABEL maintainer="Tomas Jurena <jurenatomas@gmail.com>"
 
-ENV DEBIAN_FRONTEND noninteractive
-ENV LANG C.UTF-8
+ARG DEBIAN_FRONTEND=noninteractive
+ENV LANG=C.UTF-8
 
 # Default versions
-ENV GRAFANA_VERSION=9.2.6
+ARG GRAFANA_VERSION=12.1.1
+ARG GRAFANA_TS=16903967602
 
 # Grafana database type
 ENV GF_DATABASE_TYPE=sqlite3
@@ -25,8 +26,8 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
       armhf) ARCH='armhf';; \
       armel) ARCH='armel';; \
       *)     echo "Unsupported architecture: ${dpkgArch}"; exit 1;; \
-    esac && \
-    rm /var/lib/apt/lists/* -vf \
+    esac \
+    && rm /var/lib/apt/lists/* -vf \
     # Base packages
     && apt-get -y update \
     && apt-get -y dist-upgrade \
@@ -44,21 +45,19 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
         gnupg \
         libfontconfig1 \
         adduser \
-    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs \
+	musl \
     && mkdir -p /var/log/supervisor \
     && rm -rf .profile \
     # Install InfluxDB & telegraf
-    && export DISTRIB_ID=$(lsb_release -si) \
-    && wget -q https://repos.influxdata.com/influxdb.key \
-    && echo "23a1c8836f0afc5ed24e0486339d7cc8f6790b83886c4c96995b88a061c5bb5d influxdb.key" | sha256sum -c && cat influxdb.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdb.gpg > /dev/null \
-    && echo "deb [signed-by=/etc/apt/trusted.gpg.d/influxdb.gpg] https://repos.influxdata.com/${DISTRIB_ID,,} stable main" | tee /etc/apt/sources.list.d/influxdata.list > /dev/null \
+    && wget -q https://repos.influxdata.com/influxdata-archive.key \
+    && gpg --show-keys --with-fingerprint --with-colons ./influxdata-archive.key 2>&1 | grep -q '^fpr:\+24C975CBA61A024EE1B631787C3D57159FC2F927:$' && cat influxdata-archive.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdata-archive.gpg > /dev/null \
+    && echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive.gpg] https://repos.influxdata.com/debian stable main' | tee /etc/apt/sources.list.d/influxdata.list \
     && apt-get update \
     && apt-get -y install influxdb2 telegraf \
     # Install Grafana
-    && wget -q https://dl.grafana.com/oss/release/grafana_${GRAFANA_VERSION}_${ARCH}.deb \
-    && dpkg -i grafana_${GRAFANA_VERSION}_${ARCH}.deb \
-    && rm grafana_${GRAFANA_VERSION}_${ARCH}.deb \
+    && wget -q https://dl.grafana.com/grafana/release/${GRAFANA_VERSION}/grafana_${GRAFANA_VERSION}_${GRAFANA_TS}_linux_${ARCH}.deb -O grafana.deb\
+    && dpkg -i grafana.deb \
+    && rm grafana.deb \
     # Cleanup
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
