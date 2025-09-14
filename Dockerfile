@@ -45,7 +45,9 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
         gnupg \
         libfontconfig1 \
         adduser \
-	musl \
+        musl \
+        cron \
+        python3-venv \
     && mkdir -p /var/log/supervisor \
     && rm -rf .profile \
     # Install InfluxDB & telegraf
@@ -61,6 +63,13 @@ RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" && \
     # Cleanup
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN python3 -m venv /opt/certbot/ && \
+    /opt/certbot/bin/pip install --upgrade pip && \
+    /opt/certbot/bin/pip install certbot && \
+    ln -s /opt/certbot/bin/certbot /usr/bin/certbot
+
+RUN echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && certbot renew -q" | tee -a /etc/crontab > /dev/null
 
 # Configure Supervisord and base env
 COPY supervisord/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
